@@ -194,3 +194,6 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+UIComponentDescriptor2XML.pyproj
+UIComponentDescriptor2XML.sln
+__pycache__/
