@@ -3,6 +3,11 @@ this script is use to convert UIComponentDescriptor to xml file
 
 warrning: it has many bugs =_=
 
+bugs:
+1.  it can't resolve array in propertiesFactory, like: `"columns":[_Test_DataGridColumn9_c(), _Test_DataGridColumn10_c()]`, it will just ignore it, you need to follow the functions to restore the tags and add them as children to this tag
+
+============================
+
 When decompile a Flex project, you may found it difficult to read some .as files. 
 that's because decompiler doesn't decompile it completely to MXML file, which may be like this:
 
