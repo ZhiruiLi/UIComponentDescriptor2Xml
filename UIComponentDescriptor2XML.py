@@ -529,9 +529,15 @@ class StringProcessor:
             return originalString[head:tail + 1]
     @staticmethod
     def cutHeadAndTail(s):
+        '''
+        delete first char and the last char
+        '''
         return s[1:len(s) - 1]
     @staticmethod
     def isFloat(s):
+        '''
+        return if the input string is a number, include '.'
+        '''
         if s.isnumeric():
             return True
         partition = s.partition('.')
@@ -542,6 +548,9 @@ class StringProcessor:
         return False
 
 def uiComponentDescripter2XML(uiComponentDescripter, typePrefixDict, defaultPrefix):
+    '''
+    convert UIComponentDescriptor to XML
+    '''
     def addPrefix(s):
         if s in typePrefixDict:
             return typePrefixDict[s] + str(s)
@@ -563,6 +572,9 @@ def uiComponentDescripter2XML(uiComponentDescripter, typePrefixDict, defaultPref
     return document
 
 def fromFileToFile(readPath, typePrefixDict = {}, defaultPrefix = '', writePath = ''):
+    '''
+    read file descriptor from readPath, and write XML to writePath
+    '''
     if writePath == '':
         writePath = readPath + '.xml'
     readFile = open(readPath)
@@ -603,25 +615,6 @@ def configParser(configPath = './config.cfg'):
     return (readWriteDict, typePrefixDict, defaultPrefix)
 
 if __name__ == '__main__':
-    (rwD, tpD, defP) = configParser()
-    for (k, v) in rwD.items():
-        fromFileToFile(k, tpD, defP, v)
-
- 
-    '''
-    file = open('D:\\c.as')
-    s = ''
-    for line in file.readlines():
-        s += line
-    file.close()
-    uicd = UIComponentDescriptor.parserDescriptorFromString(s)
-    typePrefixDict = {}
-    defaultPrefix = 'mx:'
-    uiComponentDescripter2XML(uicd, typePrefixDict, defaultPrefix)
-    '''
-    
-    '''
-    typePrefixDict = {}
-    defaultPrefix = 'mx:'
-    print(fromFileToFile('D:\\c.as', typePrefixDict, defaultPrefix))
-    '''
+    (readWriteDict, tagPrefixDict, defPrefix) = configParser()
+    for (k, v) in readWriteDict.items():
+        fromFileToFile(k, tagPrefixDict, defPrefix, v)
