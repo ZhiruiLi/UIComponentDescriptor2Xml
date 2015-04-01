@@ -1,5 +1,7 @@
-﻿from xml.dom.minidom import Document
+﻿#coding=utf-8
+from xml.dom.minidom import Document
 from os import path
+import codecs
 class UIComponentDescriptor:
     '''
     this class repersent the UIComponentDescripter in ActionScript
@@ -580,10 +582,12 @@ def fromFileToFile(readPath, typePrefixDict = {}, defaultPrefix = '', writePath 
     '''
     if writePath == '':
         writePath = readPath + '.xml'
-    readFile = open(readPath)
+    readFile = file = open(readPath, 'rb')
     s = ''
     for line in readFile.readlines():
-        s += line
+        if line[:3] == codecs.BOM_UTF8:
+            line = line[3:]
+        s += line.decode('utf-8')
     readFile.close()
     uicd = UIComponentDescriptor.parserDescriptorFromString(s)
     doc = uiComponentDescripter2XML(uicd, typePrefixDict, defaultPrefix)
