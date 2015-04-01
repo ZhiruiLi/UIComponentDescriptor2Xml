@@ -1,6 +1,8 @@
 # UIComponentDescriptor2XML
 this script is use to convert UIComponentDescriptor to xml file
 
+warrning: it has many bugs =_=
+
 When decompile a Flex project, you may found it difficult to read some .as files. 
 that's because decompiler doesn't decompile it completely to MXML file, which may be like this:
 
