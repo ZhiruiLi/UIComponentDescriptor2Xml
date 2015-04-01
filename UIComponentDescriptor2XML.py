@@ -283,6 +283,9 @@ class UIComponentDescriptor:
                 processor.unRead(1)
                 if tempChar == '"':
                     tempWord = StringProcessor.cutHeadAndTail(processor.readStringWithWrapper('"'))
+                elif tempChar == '[':
+                    tempWord = processor.skipSpace().readStringWithSameLayerBracket('[')
+                    continue
                 else:
                     tempWord = processor.readWord()
                 tempVal = tempWord
