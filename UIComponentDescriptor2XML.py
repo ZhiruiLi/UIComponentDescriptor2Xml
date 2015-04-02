@@ -605,7 +605,7 @@ def fromFileToFile(readPath, typePrefixDict = {}, defaultPrefix = '', writePath 
     if writePath == '':
         writePath = readPath + '.xml'
     readFile = file = open(readPath, 'rb')
-    len = readFile.seek(0, 2)
+    len = readFile.seek(0, 2) + 1
     readFile.seek(0, 0)
     bytes = readFile.read(len)
     readFile.close()
