@@ -312,11 +312,13 @@ class UIComponentDescriptor:
                     tempChar = processor.skipSpace().readChar()
                     processor.unRead(1)
                     if tempChar == '(':
-                        tempVal = tempWord
-                        tempWord = processor.readStringWithSameLayerBracket('(')
-                        if tempWord == '':
+                        tempBracket = processor.readStringWithSameLayerBracket('(')
+                        if tempBracket == '':
                             raise RuntimeError('illegal syntax')
-                        tempWord = tempVal + tempWord
+                        tempWord = tempWord + tempBracket
+                        uicd = UIComponentDescriptor().setType(tempKey)
+                        uicd.addChild(UIComponentDescriptor(True).setType(tempWord))
+                        childrenList.append(uicd)
                 tempVal = tempWord
                 attributeDict[tempKey] = tempVal
         return (attributeDict, childrenList)
