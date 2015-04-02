@@ -6,12 +6,13 @@ class UIComponentDescriptor:
     '''
     this class repersent the UIComponentDescripter in ActionScript
     '''
-    def __init__(self):
+    def __init__(self, isSimpleDescriptor = False):
         self.__id = ''
         self.__type = ''
         self.__attributes = {}
         self.__events = {}
         self.__children = []
+        self.__isSimple = isSimpleDescriptor
     def __str__(self):
         resultString = ''
         if self.getType() != '':
@@ -24,6 +25,8 @@ class UIComponentDescriptor:
             resultString += ('event : ' + k + ' --- ' + v + '\n')
         for child in self.getChildrenIter():
             resultString += ('\n' + str(child) + '\n')
+        if self.__isSimple:
+            print('is simple descriptor') 
         return resultString
     def setID(self, id):
         '''
@@ -94,6 +97,14 @@ class UIComponentDescriptor:
         get the children iterator of self
         '''
         return iter(self.__children)
+    def isSimple(self):
+        '''
+        return if self is a simple descriptor
+        '''
+        if self.__isSimple:
+            return True
+        else:
+            return False
     @staticmethod
     def __skipFunctionDeclaration(processor, type):
         '''
@@ -287,6 +298,14 @@ class UIComponentDescriptor:
                     tempWord = StringProcessor.cutHeadAndTail(processor.readStringWithWrapper('"'))
                 elif tempChar == '[':
                     tempWord = processor.skipSpace().readStringWithSameLayerBracket('[')
+                    tempWord = StringProcessor.cutHeadAndTail(tempWord)
+                    tempList = tempWord.split(',')
+                    for tempWord in tempList:
+                        tempWord = tempWord.replace(' ', '')
+                        tempWord = tempWord.replace('\n', '')
+                        tempWord = tempWord.replace('\r', '')
+                        tempWord = tempWord.replace('\t', '')
+                        childrenList.append(UIComponentDescriptor(True).setType(tempWord))
                     continue
                 else:
                     tempWord = processor.readWord()
@@ -562,7 +581,10 @@ def uiComponentDescripter2XML(uiComponentDescripter, typePrefixDict, defaultPref
         else:
             return defaultPrefix + str(s)
     def createXMLNode(doc, descriptor):
-        node = doc.createElement(addPrefix(descriptor.getType()))
+        if descriptor.isSimple():
+            node = doc.createElement(descriptor.getType())
+        else:
+            node = doc.createElement(addPrefix(descriptor.getType()))
         if descriptor.getID() != '':
             node.setAttribute('id', descriptor.getID())
         for (k, v) in descriptor.getEventIter():
