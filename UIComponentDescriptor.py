@@ -19,9 +19,9 @@ class UIComponentDescriptor:
             resultString += ('type : ' + self.getType() + '\n')
         if self.getID() != '':
             resultString += ('id : ' + self.getID() + '\n')
-        for (k, v) in self.getAttributeIter():
+        for (k, v) in self.getAttributesIter():
             resultString += ('attribute : ' + k + ' --- ' + v + '\n')
-        for (k, v) in self.getEventIter():
+        for (k, v) in self.getEventsIter():
             resultString += ('event : ' + k + ' --- ' + v + '\n')
         for child in self.getChildrenIter():
             resultString += ('\n' + str(child) + '\n')
@@ -50,7 +50,7 @@ class UIComponentDescriptor:
         get ID if self has one, or return ''
         '''
         return self.__type
-    def addAttribute(self, attrKey, attrVal):
+    def setAttribute(self, attrKey, attrVal):
         '''
         add attribute key-value pair to self
         '''
@@ -63,12 +63,12 @@ class UIComponentDescriptor:
         if self.__attributes.has(attrKey):
             del self.__attributes[attrKey]
         return self
-    def getAttributeIter(self):
+    def getAttributesIter(self):
         '''
         get the attribute iterator of self
         '''
         return self.__attributes.items()
-    def addEvent(self, eventKey, eventVal):
+    def setEvent(self, eventKey, eventVal):
         '''
         add event key-value pair to self
         '''
@@ -81,7 +81,7 @@ class UIComponentDescriptor:
         if self.__events.has(eventKey):
             del self.__events[eventKey]
         return self
-    def getEventIter(self):
+    def getEventsIter(self):
         '''
         get the event iterator of self
         '''
@@ -175,7 +175,7 @@ class UIComponentDescriptor:
                 eventsDict = UIComponentDescriptor.eventsParser(\
                     inputObjectProcessor.unRead(1).readStringWithSameLayerBracket('{'))
                 for (k, v) in eventsDict.items():
-                    resultDescriptor.addEvent(k, v)
+                    resultDescriptor.setEvent(k, v)
                 continue
             elif tempKey == 'stylesFactory':
                 UIComponentDescriptor.__skipFunctionDeclaration(inputObjectProcessor, 'void')
@@ -184,7 +184,7 @@ class UIComponentDescriptor:
                 stylesDict = UIComponentDescriptor.stylesFactoryParser(\
                     inputObjectProcessor.unRead(1).readStringWithSameLayerBracket('{'))
                 for (k, v) in stylesDict.items():
-                    resultDescriptor.addAttribute(k, v)
+                    resultDescriptor.setAttribute(k, v)
                 continue
             elif tempKey == 'propertiesFactory':
                 UIComponentDescriptor.__skipFunctionDeclaration(inputObjectProcessor, 'Object')
@@ -193,7 +193,7 @@ class UIComponentDescriptor:
                 (attrsDict, childrenList) = UIComponentDescriptor.propertiesFactoryParser(\
                     inputObjectProcessor.unRead(1).readStringWithSameLayerBracket('{'))
                 for (k, v) in attrsDict.items():
-                    resultDescriptor.addAttribute(k, v)
+                    resultDescriptor.setAttribute(k, v)
                 for child in iter(childrenList):
                     resultDescriptor.addChild(child)
                 continue
@@ -366,9 +366,9 @@ def uiComponentDescripter2XML(uiComponentDescripter, typePrefixDict, defaultPref
             node = doc.createElement(addPrefix(descriptor.getType()))
         if descriptor.getID() != '':
             node.setAttribute('id', descriptor.getID())
-        for (k, v) in descriptor.getEventIter():
+        for (k, v) in descriptor.getEventsIter():
             node.setAttribute(k, v)
-        for (k, v) in descriptor.getAttributeIter():
+        for (k, v) in descriptor.getAttributesIter():
             node.setAttribute(k, v)
         for child in descriptor.getChildrenIter():
             node.appendChild(createXMLNode(doc, child))

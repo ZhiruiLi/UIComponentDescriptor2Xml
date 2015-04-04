@@ -1,27 +1,21 @@
-from UIComponentDescriptor2XML import uiComponentDescripter2XML
-from UIComponentDescriptor2XML import UIComponentDescriptor
+#coding=utf-8
+from UIComponentDescriptor import uiComponentDescripter2XML
+from UIComponentDescriptor import UIComponentDescriptor
 from StringProcessor import StringProcessor
+import AcrionScriptModule
 import codecs
+import FileProcessor
 def fromFileToFile(readPath, typePrefixDict = {}, defaultPrefix = '', writePath = ''):
     '''
     read file descriptor from readPath, and write XML to writePath
     '''
     if writePath == '':
         writePath = readPath + '.xml'
-    readFile = file = open(readPath, 'rb')
-    len = readFile.seek(0, 2) + 1
-    readFile.seek(0, 0)
-    bytes = readFile.read(len)
-    readFile.close()
-    if bytes[:3] == codecs.BOM_UTF8:
-        bytes = bytes[3:]
-    s = bytes.decode()
+    s = FileProcessor.readAllFromFile(readPath)
+    s = AcrionScriptModule.removeComments(s)
     uicd = UIComponentDescriptor.parserDescriptorFromString(s)
     doc = uiComponentDescripter2XML(uicd, typePrefixDict, defaultPrefix)
-    writeFile = open(writePath, 'wb')
-    bytes = doc.toprettyxml('    ').encode('utf-8')
-    writeFile.write(bytes)
-    writeFile.close()
+    FileProcessor.writeAllToFile(doc.toprettyxml('    '), writePath)
 
 def configParser(configPath = './config.cfg'):
     '''
@@ -32,10 +26,8 @@ def configParser(configPath = './config.cfg'):
     typePrefixDict = {}
     defaultPrefix = ''
     config = open(configPath, 'rb')
-    for bytesLine in config.readlines():
-        if bytesLine[:3] == codecs.BOM_UTF8:
-            bytesLine = bytesLine[3:]
-        line = bytesLine.decode('utf-8')
+    lines = FileProcessor.readAllFromFile(configPath).splitlines()
+    for line in lines:
         processor = StringProcessor(line)
         tempChar = processor.skipSpace().readChar()
         tempKey = processor.skipSpace().readStringWithSameLayerBracket('<')
@@ -51,7 +43,7 @@ def configParser(configPath = './config.cfg'):
         elif tempChar == '&':
             defaultPrefix = tempKey
         else:
-            if not line.isspace():
+            if not (line.isspace() or line == ''):
                 raise RuntimeError('illegal config head')
     return (readWriteDict, typePrefixDict, defaultPrefix)
 

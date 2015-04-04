@@ -1,3 +1,4 @@
+#coding=utf-8
 class StringProcessor:
     '''
     add convenience to analyse string
@@ -96,7 +97,7 @@ class StringProcessor:
         if self.__pointer >= strLen:
             self.__pointer = strLen
         return self.__strBuffer[tempPointer:self.__pointer]
-    def unRead(self, charNum):
+    def unRead(self, charNum = 1):
         '''
         move pointer back charNum chars
         '''
@@ -164,6 +165,24 @@ class StringProcessor:
             return ''
         else:
             return self.__strBuffer[self.__pointer:len(self.__strBuffer) - 1]
+    def readTo(self, token):
+        '''
+        read to a token and return string has read
+        '''
+        readString = ''
+        while True:
+            tempChar = self.readChar()
+            if tempChar == '':
+                self.unRead(len(readString))
+                return ''
+            if tempChar == token[0]:
+                tempToken = self.unRead().readString(len(token))
+                if tempToken == token:
+                    readString += token
+                    return readString
+                self.unRead(len(tempToken) - 1)
+            readString += tempChar
+
     @staticmethod
     def isWrappedBy(originalString, wrapperString, ignoreSideSpaces = True):
         '''
@@ -227,3 +246,8 @@ class StringProcessor:
             (partition[0].isdigit() and partition[1]=='.' and partition[2]==''):
             return True
         return False
+
+if __name__ == '__main__':
+    processor = StringProcessor('aaa/ */abc123/f')
+    print(processor.readTo('/*'))
+    print(processor.readWord())
