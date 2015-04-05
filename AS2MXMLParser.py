@@ -2,7 +2,7 @@
 from UIComponentDescriptor import uiComponentDescripter2XML
 from UIComponentDescriptor import UIComponentDescriptor
 from StringProcessor import StringProcessor
-import AcrionScriptModule
+import ASModule
 import codecs
 import FileProcessor
 def fromFileToFile(readPath, typePrefixDict = {}, defaultPrefix = '', writePath = ''):
@@ -12,7 +12,7 @@ def fromFileToFile(readPath, typePrefixDict = {}, defaultPrefix = '', writePath 
     if writePath == '':
         writePath = readPath + '.xml'
     s = FileProcessor.readAllFromFile(readPath)
-    s = AcrionScriptModule.removeComments(s)
+    s = ASModule.removeComments(s)
     uicd = UIComponentDescriptor.parserDescriptorFromString(s)
     doc = uiComponentDescripter2XML(uicd, typePrefixDict, defaultPrefix)
     FileProcessor.writeAllToFile(doc.toprettyxml('    '), writePath)

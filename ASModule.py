@@ -85,6 +85,45 @@ class ASClass:
     def getVariablesIter(self):
         return self.__varDict.items()
 
+def isLegalName(s):
+    tempStr = s.strip()
+    if tempStr == '':
+        return False
+    if tempStr[0].isnumeric():
+        return False
+    for pointer in range(0, len(tempStr)):
+        if not (tempStr[pointer].isalnum() or tempStr[pointer] == '_'):
+            return False
+    return True
+
+def isLegalNumber(s):
+    tempStr = s.strip()
+    if tempStr == '':
+        return False
+    if not tempStr.startswith('0'):
+        try:
+            float(tempStr)
+        except:
+            return False
+    if tempStr.startswith('0x'):
+        try:
+            int(tempStr, 16)
+        except:
+            return False
+    elif tempStr.startswith('0'):
+        try:
+            int(tempStr, 8)
+        except:
+            return False
+    return True
+
+def isLegalValue(s):
+    if isLegalNumber(s) or isLegalName(s):
+        return True
+    if StringProcessor.isWrappedBy(s.strip(), '"') or StringProcessor.isWrappedBy(s.strip(), "'"):
+        return True
+    return False
+
 def removeComments(s):
     resultStr = ''
     strlen = len(s)
