@@ -290,6 +290,4 @@ def removeComments(s):
             pointer += 1
 
 if __name__ == '__main__':
-    s = FileProcessor.readAllFromFile('D:\\testin.txt')
-    s = removeComments(s)
-    FileProcessor.writeAllToFile(s, 'D:\\testout.txt')
+    pass

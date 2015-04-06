@@ -1,6 +1,5 @@
 ﻿import ASModule
 from StringProcessor import StringProcessor
-import FileProcessor
 
 class ASPaserState:
     _currentClass = None
@@ -680,23 +679,5 @@ class EndSetFuncArgDec(ASPaserState):
             return FuncTypeDec
         return ErrorState
 
-def parseASString(s):
-    processor = StringProcessor(s)
-    state = StartState
-    words = ['', '', '', '', '']
-    while not state.isEnd():
-        tempWord = processor.skipSpace().readWord()
-        words = words[1:]
-        words.append(tempWord)
-        state = state.nextPaser(tempWord)
-    if state.isError():
-        ws = ''
-        for w in words:
-            ws += w
-        raise RuntimeError('error state, last 5 words are ' + ws)
-    return ASPaserState._currentClass
-
 if __name__ == '__main__':
-    s = FileProcessor.readAllFromFile('D:\\teststate.as')
-    s = ASModule.removeComments(s)
-    parseASString(s)
+    pass
