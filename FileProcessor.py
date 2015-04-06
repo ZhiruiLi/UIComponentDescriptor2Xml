@@ -1,4 +1,4 @@
-#coding=utf-8
+﻿#coding=utf-8
 import codecs
 def readAllFromFile(filePath):
     readBinaryFile = open(filePath, 'rb')

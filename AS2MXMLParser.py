@@ -1,4 +1,4 @@
-#coding=utf-8
+﻿#coding=utf-8
 from UIComponentDescriptor import uiComponentDescripter2XML
 from UIComponentDescriptor import UIComponentDescriptor
 from StringProcessor import StringProcessor

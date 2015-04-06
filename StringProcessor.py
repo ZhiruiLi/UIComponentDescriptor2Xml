@@ -1,4 +1,4 @@
-#coding=utf-8
+﻿#coding=utf-8
 class StringProcessor:
     '''
     add convenience to analyse string
