@@ -1,14 +1,14 @@
 ﻿import ASModule
 from StringProcessor import StringProcessor
 
-class ASPaserState:
+class ASPaserState(object):
     _currentClass = None
     _currentFunc = None
     _currentVar = None
     _currentArgument = None
     _currentImplement = ''
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         raise RuntimeError('unknown state')
     @staticmethod
     def isStart():
@@ -25,7 +25,7 @@ class StartState(ASPaserState):
     def isStart():
         return True
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == 'package':
             ASPaserState._currentClass = ASModule.ASClass()
             return PkgDec1
@@ -40,7 +40,7 @@ class ErrorState(ASPaserState):
     def isError():
         return True
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         return self
 
 class EndPkg(ASPaserState):
@@ -48,12 +48,12 @@ class EndPkg(ASPaserState):
     def isEnd():
         return True
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         return EndPkg
     
 class PkgDec1(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             return PkgDec2
         if currentReadString == '{':
@@ -62,7 +62,7 @@ class PkgDec1(ASPaserState):
 
 class PkgDec2(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '.':
             return PkgDec1
         if currentReadString == '{':
@@ -71,7 +71,7 @@ class PkgDec2(ASPaserState):
 
 class InPkg(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ';':
             return InPkg
         if currentReadString == '}':
@@ -86,7 +86,7 @@ class InPkg(ASPaserState):
 
 class ImportPkg1(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '*':
             return ImportPkgAll
         if ASModule.isLegalName(currentReadString):
@@ -95,7 +95,7 @@ class ImportPkg1(ASPaserState):
 
 class ImportPkg2(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '.':
             return ImportPkg1
         if currentReadString == ';':
@@ -104,42 +104,42 @@ class ImportPkg2(ASPaserState):
 
 class ImportPkgAll(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ';':
             return InPkg
         return ErrorState
 
 class NameSpaceDec1(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == 'namespace':
             return NameSpaceDec2
         return ErrorState
 
 class NameSpaceDec2(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             return NameSpaceName
         return ErrorState
 
 class NameSpaceName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ';':
             return InPkg
         return NameSpaceName
 
 class ClassAccessPermission(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == 'class':
             return ClassDec
         return ErrorState
 
 class ClassDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             ASPaserState._currentClass.setName(currentReadString)
             return ClassName
@@ -147,7 +147,7 @@ class ClassDec(ASPaserState):
 
 class ClassName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == 'extends':
             return ClassExtends1
         if currentReadString == 'implements':
@@ -158,7 +158,7 @@ class ClassName(ASPaserState):
 
 class ClassExtends1(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             tempClass = ASPaserState._currentClass
             tempClass.setExtend(tempClass.getExtend() + currentReadString)
@@ -167,7 +167,7 @@ class ClassExtends1(ASPaserState):
 
 class ClassExtends2(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '.':
             tempClass = ASPaserState._currentClass
             tempClass.setExtend(tempClass.getExtend() + currentReadString)
@@ -180,7 +180,7 @@ class ClassExtends2(ASPaserState):
 
 class ClassImplements1(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             ASPaserState._currentImplement += currentReadString
             return ClassImplements2
@@ -188,7 +188,7 @@ class ClassImplements1(ASPaserState):
 
 class ClassImplements2(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '.':
             ASPaserState._currentImplement += currentReadString
             return ClassImplements1
@@ -204,7 +204,7 @@ class ClassImplements2(ASPaserState):
 
 class InClass(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ';':
             return InClass
         if currentReadString == '}':
@@ -262,14 +262,14 @@ class InClass(ASPaserState):
 
 class MetaDataTag(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ']':
             return InClass
         return MetaDataTag
 
 class MemberDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == 'static':
             if ASPaserState._currentFunc == None:
                 ASPaserState._currentFunc = ASModule.ASFunction()
@@ -300,7 +300,7 @@ class MemberDec(ASPaserState):
 
 class StaticMemDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == 'final':
             ASPaserState._currentFunc.setFinal(True)
             return FinalFuncDec
@@ -315,7 +315,7 @@ class StaticMemDec(ASPaserState):
 
 class ConstDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             ASPaserState._currentVar.setName(currentReadString)
             return VarName
@@ -323,7 +323,7 @@ class ConstDec(ASPaserState):
 
 class VarDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             ASPaserState._currentVar.setName(currentReadString)
             return VarName
@@ -331,7 +331,7 @@ class VarDec(ASPaserState):
 
 class VarName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ';':
             return InClass
         if currentReadString == '=':
@@ -342,7 +342,7 @@ class VarName(ASPaserState):
 
 class VarTypeDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             tempVar = ASPaserState._currentVar
             tempVar.setType(tempVar.getType() + currentReadString)
@@ -351,7 +351,7 @@ class VarTypeDec(ASPaserState):
 
 class VarTypeName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ';':
             '''
             print('new var : ')
@@ -375,7 +375,7 @@ class VarTypeName(ASPaserState):
 
 class VarValue(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         appendVal = lambda:ASPaserState._currentVar.setValue(\
             ASPaserState._currentVar.getValue() +\
             currentReadString)
@@ -400,7 +400,7 @@ class VarValue(ASPaserState):
 
 class InVarValueQuote(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         appendVal = lambda:ASPaserState._currentVar.setValue(ASPaserState._currentVar.getValue() + currentReadString)
         if currentReadString == '\\':
             appendVal()
@@ -413,20 +413,20 @@ class InVarValueQuote(ASPaserState):
     
 class AfterVarValueQuoteBackSlash(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         ASPaserState._currentVar.setValue(ASPaserState._currentVar.getValue() + currentReadString)
         return InVarValueQuote
 
 class FinalFuncDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == 'function':
             return FuncDec
         return ErrorState
 
 class FuncDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == 'get':
             ASPaserState._currentFunc.setGetter()
             return GetFuncDec
@@ -440,7 +440,7 @@ class FuncDec(ASPaserState):
 
 class GetFuncDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             ASPaserState._currentFunc.setName(currentReadString)
             return GetFuncName
@@ -448,7 +448,7 @@ class GetFuncDec(ASPaserState):
 
 class SetFuncDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             ASPaserState._currentFunc.setName(currentReadString)
             return SetFuncName
@@ -456,14 +456,14 @@ class SetFuncDec(ASPaserState):
 
 class FuncName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '(':
             return FuncArgDec
         return ErrorState
 
 class FuncArgDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ')':
             return EndFuncArgDec
         if ASModule.isLegalName(currentReadString):
@@ -474,7 +474,7 @@ class FuncArgDec(ASPaserState):
 
 class FuncArgName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ',':
             ASPaserState._currentFunc.setArgument(ASPaserState._currentArgument)
             ASPaserState._currentArgument = None
@@ -489,7 +489,7 @@ class FuncArgName(ASPaserState):
 
 class FuncArgTypeDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             tempArg = ASPaserState._currentArgument
             tempArg.setName(tempArg.getName() + currentReadString)
@@ -498,7 +498,7 @@ class FuncArgTypeDec(ASPaserState):
 
 class FuncArgTypeName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ',':
             ASPaserState._currentFunc.setArgument(ASPaserState._currentArgument)
             ASPaserState._currentArgument = None
@@ -515,7 +515,7 @@ class FuncArgTypeName(ASPaserState):
 
 class EndFuncArgDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '{':
             return InFunc
         if currentReadString == ':':
@@ -524,7 +524,7 @@ class EndFuncArgDec(ASPaserState):
 
 class FuncTypeDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             tempFunc = ASPaserState._currentFunc
             tempFunc.setType(tempFunc.getType() + currentReadString)
@@ -533,7 +533,7 @@ class FuncTypeDec(ASPaserState):
 
 class FuncTypeName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '.':
             tempFunc = ASPaserState._currentFunc
             tempFunc.setType(tempFunc.getType() + currentReadString)
@@ -545,7 +545,7 @@ class FuncTypeName(ASPaserState):
 class InFunc(ASPaserState):
     __layer = 0
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         appendBody = lambda s:ASPaserState._currentFunc.setBody(ASPaserState._currentFunc.getBody() + s)
         appendWithNewLine = lambda:appendBody(currentReadString + '\r\n')
         appendCurrent = lambda:appendBody(currentReadString)
@@ -592,7 +592,7 @@ class InFunc(ASPaserState):
 
 class InFuncQuote(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         appendBody = lambda:ASPaserState._currentFunc.setBody(ASPaserState._currentFunc.getBody() + currentReadString)
         if currentReadString == '\\':
             appendBody()
@@ -605,28 +605,28 @@ class InFuncQuote(ASPaserState):
     
 class AfterInFuncQuoteBackSlash(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         ASPaserState._currentFunc.setBody(ASPaserState._currentFunc.getBody() + currentReadString)
         return InFuncQuote
 
 
 class GetFuncName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '(':
             return GetFuncArgDec
         return ErrorState
 
 class GetFuncArgDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ')':
             return EndGetFuncArgDec
         return ErrorState
 
 class EndGetFuncArgDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '{':
             return InFunc
         if currentReadString == ':':
@@ -635,21 +635,21 @@ class EndGetFuncArgDec(ASPaserState):
 
 class SetFuncName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '(':
             return SetFuncArgDec
         return ErrorState
 
 class SetFuncArgDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             return SetFuncArgName
         return ErrorState
 
 class SetFuncArgName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ':':
             return SetFuncArgTypeDec
         if currentReadString == ')':
@@ -658,21 +658,21 @@ class SetFuncArgName(ASPaserState):
 
 class SetFuncArgTypeDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if ASModule.isLegalName(currentReadString):
             return SetFuncArgTypeName
         return ErrorState
 
 class SetFuncArgTypeName(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == ')':
             return EndSetFuncArgDec
         return ErrorState
 
 class EndSetFuncArgDec(ASPaserState):
     @staticmethod
-    def nextPaser(currentReadString):
+    def nextState(currentReadString):
         if currentReadString == '{':
             return InFunc
         if currentReadString == ':':

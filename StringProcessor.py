@@ -1,5 +1,5 @@
 ﻿#coding=utf-8
-class StringProcessor:
+class StringProcessor(object):
     '''
     add convenience to analyse string
     '''
@@ -71,7 +71,13 @@ class StringProcessor:
             if tempChar == '':
                 self.unRead(len(subStr))
                 return ''
-            if tempChar == wrapperString[0]:
+            elif tempChar == '\\':
+                subStr += tempChar
+                tempChar = self.readChar()
+                if tempChar == '':
+                    self.unRead(len(subStr))
+                    return ''
+            elif tempChar == wrapperString[0]:
                 self.unRead(1)
                 tempStr = self.readString(wrapperLen)
                 if tempStr == wrapperString:

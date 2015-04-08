@@ -1,12 +1,13 @@
 ﻿from StringProcessor import StringProcessor
 import FileProcessor
-class ASMember:
+class ASMember(object):
     def __init__(self, name=''):
         self._name = name
         self._body = ''
         self._type = ''
         self._access = ''
         self._isStatic = False
+        self._nameSpace = ''
     def getName(self):
         return self._name
     def setName(self, name):
@@ -29,6 +30,11 @@ class ASMember:
             self._isStatic = True
         else:
             self._isStatic = False
+        return self
+    def getNameSpace(self):
+        return self._nameSpace
+    def setNameSpace(self, namespace):
+        self._nameSpace = namespace
         return self
 
 class ASFunction(ASMember):
@@ -99,7 +105,7 @@ class ASVariable(ASMember):
             self._isConst = False
         return self
 
-class ASClass:
+class ASClass(object):
     def __init__(self):
         self._name = ''
         self._access = ''

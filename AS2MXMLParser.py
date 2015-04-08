@@ -16,10 +16,8 @@ def fromFileToFile(readPath, typePrefixDict = {}, defaultPrefix = '', writePath 
         writePath = readPath + '.xml'
     s = FileProcessor.readAllFromFile(readPath)
     s = ASModule.removeComments(s)
-    '''
     uicd = UIComponentDescriptor.parserDescriptorFromString(s)
     doc = uiComponentDescripter2XML(uicd, typePrefixDict, defaultPrefix)
-    '''
     FileProcessor.writeAllToFile(doc.toprettyxml('    '), writePath)
 
 def configParser(configPath = './config.cfg'):
@@ -60,7 +58,7 @@ def parseASString(s):
         tempWord = processor.skipSpace().readWord()
         words = words[1:]
         words.append(tempWord)
-        state = state.nextPaser(tempWord)
+        state = state.nextState(tempWord)
     if state.isError():
         ws = ''
         for w in words:
@@ -72,15 +70,23 @@ def parseConstructor(asClass):
     pass
 
 def fromASToMXML(asClass):
-    asClass.getFunctionsIter()
+    print('class name is : ' + asClass.getName())
+    for name, var in asClass.getVariablesIter():\
+        print('variable : ' + var.getName())
+    for name, fun in asClass.getFunctionsIter():
+        print('function : ' + fun.getName())
+    for name, getter in asClass.getGettersIter():
+        print('getter : ' + getter.getName())
+    for name, setter in asClass.getFunctionsIter():
+        print('setter : ' + setter.getName())
 
 if __name__ == '__main__':
-    '''
     (readWriteDict, tagPrefixDict, defPrefix) = configParser()
     for (k, v) in readWriteDict.items():
         fromFileToFile(k, tagPrefixDict, defPrefix, v)
     '''
     asString = FileProcessor.readAllFromFile('D:\\teststate.as')
-    asString = ASModule.removeComments(s)
-    asClass = parseASString(s)
+    asString = ASModule.removeComments(asString)
+    asClass = parseASString(asString)
     doc = fromASToMXML(asClass)
+    '''

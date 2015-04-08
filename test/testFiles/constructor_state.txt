@@ -1,0 +1,10 @@
+this.abc = 1 + 2 ;
+            
+	abcde();
+this.def;
+;
+  ;
+if (a > b) {
+this.def = "abc";
+	this.abc = 1 + 2 ;
+}

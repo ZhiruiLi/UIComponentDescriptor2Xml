@@ -2,7 +2,7 @@
 from xml.dom.minidom import Document
 from StringProcessor import StringProcessor
 import codecs
-class UIComponentDescriptor:
+class UIComponentDescriptor(object):
     '''
     this class repersent the UIComponentDescripter in ActionScript
     '''
@@ -26,7 +26,7 @@ class UIComponentDescriptor:
         for child in self.getChildrenIter():
             resultString += ('\n' + str(child) + '\n')
         if self.__isSimple:
-            print('is simple descriptor') 
+            resultString += 'is simple descriptor'
         return resultString
     def setID(self, id):
         '''
@@ -158,9 +158,19 @@ class UIComponentDescriptor:
             if inputObjectProcessor.skipSpace().readChar() != ':':
                 raise RuntimeError('illegal syntax')
             if tempKey == 'type':
-                tempType = inputObjectProcessor.skipSpace().readWord()
-                if tempType == '':
-                    raise RuntimeError('illegal syntax')
+                tempType = ''
+                while True:
+                    tempType += inputObjectProcessor.skipSpace().readWord()
+                    if tempType == '':
+                        raise RuntimeError('illegal syntax')
+                    charAfterType = inputObjectProcessor.readChar()
+                    if charAfterType == '':
+                        raise RuntimeError('illegal syntax')
+                    if charAfterType == '.':
+                        tempType += charAfterType
+                    else:
+                        inputObjectProcessor.unRead(1)
+                        break
                 resultDescriptor.setType(tempType)
                 continue
             elif tempKey == 'id':
