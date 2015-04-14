@@ -1,4 +1,5 @@
 ﻿#coding=utf-8
+import re
 class StringProcessor(object):
     '''
     add convenience to analyse string
@@ -39,11 +40,18 @@ class StringProcessor(object):
             if self.__strBuffer[self.__pointer] == 'x' or self.__strBuffer[self.__pointer] == 'X':
                 while self.__pointer < strLen and (self.__strBuffer[self.__pointer].isalnum()):
                     self.__pointer += 1
-        elif self.__strBuffer[self.__pointer] == '.' or self.__strBuffer[self.__pointer].isnumeric():
+        elif self.__strBuffer[self.__pointer] == '.' or self.__strBuffer[self.__pointer] == '-' or \
+            self.__strBuffer[self.__pointer] == '+' or self.__strBuffer[self.__pointer].isnumeric():
             tempString = self.__strBuffer[self.__pointer]
             self.__pointer += 1
             while self.__pointer < strLen:
                 tempString += self.__strBuffer[self.__pointer]
+                if self.__strBuffer[self.__pointer].lower() == 'e':
+                    self.__pointer += 1
+                    if self.__strBuffer[self.__pointer] == '-' or self.__strBuffer[self.__pointer] == '+':
+                        tempString += self.__strBuffer[self.__pointer]
+                        self.__pointer += 1
+                    continue
                 if not StringProcessor.isFloat(tempString):
                     break
                 self.__pointer += 1
@@ -52,6 +60,7 @@ class StringProcessor(object):
         else:
             while self.__pointer < strLen and (self.__strBuffer[self.__pointer].isalnum() or self.__strBuffer[self.__pointer] == '_'):
                 self.__pointer += 1
+        print(self.__strBuffer[tempPointer:self.__pointer])
         return self.__strBuffer[tempPointer:self.__pointer]
     def readStringWithWrapper(self, wrapperString):
         '''
@@ -244,16 +253,13 @@ class StringProcessor(object):
         '''
         return if the input string is a number, include '.'
         '''
-        if s.isnumeric():
-            return True
-        partition = s.partition('.')
-        if (partition[0].isdigit() and partition[1]=='.' and partition[2].isdigit()) or \
-            (partition[0]=='' and partition[1]=='.' and partition[2].isdigit()) or \
-            (partition[0].isdigit() and partition[1]=='.' and partition[2]==''):
+        prog = re.compile(r'[-+]?(\d*\.\d*|\d+)([eE][-+]?(\d)+)?')
+        match = prog.match(s) 
+        if match and match.group(0) == s:
             return True
         return False
 
 if __name__ == '__main__':
-    processor = StringProcessor('aaa/ */abc123/f')
-    print(processor.readTo('/*'))
+    processor = StringProcessor('-0.3E-123a')
+    print(processor.readWord())
     print(processor.readWord())
