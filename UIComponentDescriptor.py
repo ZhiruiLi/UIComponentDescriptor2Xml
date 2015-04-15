@@ -319,6 +319,11 @@ class UIComponentDescriptor(object):
                     continue
                 else:
                     tempWord = processor.readWord()
+                    if tempWord == 'new':
+                        tempConstructor = processor.skipSpace().readWord()
+                        if tempConstructor == 1 and (not tempConstructor.isalpha()):
+                            raise RuntimeError('illegal syntax')
+                        tempWord = ''.join([tempWord, ' ', tempConstructor])
                     tempChar = processor.skipSpace().readChar()
                     processor.unRead(1)
                     if tempChar == '(':
