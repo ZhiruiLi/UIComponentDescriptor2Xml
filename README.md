@@ -1,5 +1,6 @@
 # UIComponentDescriptor2XML
-this script is use to convert UIComponentDescriptor to xml file
+
+This script is used to convert UIComponentDescriptor to XML file
 
 warrning: it has many bugs =_=
 
@@ -8,8 +9,8 @@ bugs:
 
 ============================
 
-When decompile a Flex project, you may found it difficult to read some .as files. 
-that's because decompiler doesn't decompile it completely to MXML file, which may be like this:
+After decompile a Flex project, you may found it difficult to read some .as files. 
+That's because some decompilers can not decompile the byte code to MXML file completely, which may cause the following code:
 
 ```ActionScript
 new UIComponentDescriptor({
@@ -48,7 +49,7 @@ new UIComponentDescriptor({
 });
 ```
 
-use this script, it can be convert to :
+With this script, it can be convert to:
 
 ```XML
 <?xml version="1.0" ?>
@@ -57,7 +58,7 @@ use this script, it can be convert to :
 </mx:Canvas>
 ```
 
-use config file to setup, it can be written like this:
+Use config file to setup, it can be written like this:
 
 ```
 #this is the config file, lines that begin with '#' will be treated as comments
